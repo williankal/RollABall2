@@ -3,18 +3,21 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using UnityEngine;
+using UnityEngine.SceneManagement;  
 using UnityEngine.InputSystem;
+
 using TMPro;
 
 
 public class PlayerControler : MonoBehaviour
 {
     private Rigidbody rb;
-    public float speed = 15;
+    public float speed = 10;
+	public TextMeshProUGUI timeText;
 
     public TextMeshProUGUI countText;
     private int count;
-    
+    private float time;
     private float movementX;
     private float movementY;
 
@@ -28,6 +31,8 @@ public class PlayerControler : MonoBehaviour
     {
         rb = GetComponent<Rigidbody>();
         count = 7;
+		time = 25.0f;
+
         SetCountText();
         winTextObject.SetActive(false);
         loseTextObject.SetActive(false);
@@ -44,7 +49,7 @@ public class PlayerControler : MonoBehaviour
         countText.text = "Count: " + count.ToString();
         if(count < 1)
         {
-            winTextObject.SetActive(true);
+            SceneManager.LoadScene("MenuWin");
         }
     }
 
@@ -55,11 +60,22 @@ public class PlayerControler : MonoBehaviour
         rb.AddForce(movement * speed);
 
     }
+	void Update(){
+		if (time > 0){
+			time = time - Time.deltaTime;
+			timeText.text = "Time: "+Convert.ToInt32(time).ToString();
+		}
+		else{
+			SceneManager.LoadScene("Scenes/MenuLoss");
+		}
+		
+	}
 
     private void OnTriggerEnter(Collider other)
     {
         if (other.gameObject.CompareTag("PickUp")) 
         {
+            
             other.gameObject.SetActive(false);
             count = count - 1;
             SetCountText();
